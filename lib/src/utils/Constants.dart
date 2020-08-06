@@ -1,0 +1,1 @@
+const String IS_REGISTER = "IS_REGISTER";
