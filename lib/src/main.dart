@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutte_demo/src/register/register.dart';
+import 'package:flutte_demo/src/screen/home/Home.dart';
+import 'package:flutte_demo/src/screen/register/register.dart';
 import 'package:flutte_demo/src/utils/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,8 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => Splash(),
+        '/': (context) => Home(),
         '/register': (context) => Register(),
+        '/home': (context) => Home(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -60,7 +62,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
       if (!value)
         Timer(
           Duration(seconds: 3),
-              () {
+          () {
             print(value);
             Navigator.pushNamed(context, "/register");
           },

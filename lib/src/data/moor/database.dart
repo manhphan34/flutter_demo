@@ -11,7 +11,6 @@ class User extends Table {
   TextColumn get name => text().named('name')();
 
   DateTimeColumn get date => dateTime().nullable()();
-
 }
 
 class Category extends Table {
@@ -28,7 +27,7 @@ class Category extends Table {
 class Quiz extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn get idCat => integer().customConstraint("UNIQUE")();
+  IntColumn get idCat => integer()();
 
   TextColumn get description => text()();
 
@@ -46,7 +45,7 @@ class Quiz extends Table {
 class Point extends Table {
   IntColumn get id => integer().autoIncrement()();
 
-  IntColumn get idCat => integer().customConstraint("UNIQUE")();
+  IntColumn get idCat => integer()();
 
   IntColumn get point => integer()();
 
@@ -55,6 +54,15 @@ class Point extends Table {
 
 @UseMoor(tables: [User, Quiz, Point, Category], daos: [ModesDao])
 class AppDatabase extends _$AppDatabase {
+  static AppDatabase _instance;
+
+  static AppDatabase getInstance() {
+    if (_instance == null) {
+      _instance = AppDatabase();
+    }
+    return _instance;
+  }
+
   AppDatabase()
       : super(FlutterQueryExecutor.inDatabaseFolder(
           path: 'db.sqlite',
@@ -85,7 +93,8 @@ class ModesDao extends DatabaseAccessor<AppDatabase> with _$ModesDaoMixin {
   }
 
   Future<void> insertCategories({List<CategoryModel> cats}) async {
-    await batch((batch) => {batch.insertAll(category, convertToCategories(cats))});
+    await batch(
+        (batch) => {batch.insertAll(category, convertToCategories(cats))});
   }
 
   Future<void> insertPoint(PointCompanion pointCompanion) {

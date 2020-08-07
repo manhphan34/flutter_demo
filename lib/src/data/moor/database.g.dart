@@ -549,8 +549,11 @@ class $QuizTable extends Quiz with TableInfo<$QuizTable, QuizData> {
   @override
   GeneratedIntColumn get idCat => _idCat ??= _constructIdCat();
   GeneratedIntColumn _constructIdCat() {
-    return GeneratedIntColumn('id_cat', $tableName, false,
-        $customConstraints: 'UNIQUE');
+    return GeneratedIntColumn(
+      'id_cat',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _descriptionMeta =
@@ -899,8 +902,11 @@ class $PointTable extends Point with TableInfo<$PointTable, PointData> {
   @override
   GeneratedIntColumn get idCat => _idCat ??= _constructIdCat();
   GeneratedIntColumn _constructIdCat() {
-    return GeneratedIntColumn('id_cat', $tableName, false,
-        $customConstraints: 'UNIQUE');
+    return GeneratedIntColumn(
+      'id_cat',
+      $tableName,
+      false,
+    );
   }
 
   final VerificationMeta _pointMeta = const VerificationMeta('point');

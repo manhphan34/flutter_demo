@@ -1,11 +1,17 @@
 import 'package:flutte_demo/src/data/models/Category.dart';
 import 'package:flutte_demo/src/data/models/Quiz.dart';
+import 'package:flutte_demo/src/data/models/User.dart';
 import 'package:flutte_demo/src/data/moor/database.dart';
+import 'package:flutte_demo/src/utils/Date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Register extends StatelessWidget {
+  var _name = "";
+  var db = AppDatabase.getInstance().modesDao;
+
   @override
   Widget build(BuildContext context) {
     Future<bool> _onBackPressed() {
@@ -40,6 +46,7 @@ class Register extends StatelessWidget {
           false;
     }
 
+    final datePicker = DatePicker();
     return WillPopScope(
         onWillPop: _onBackPressed,
         child: Scaffold(
@@ -47,14 +54,70 @@ class Register extends StatelessWidget {
             title: Text("Register"),
             centerTitle: true,
           ),
-          body: Center(
-            child: Text("Register"),
+          body: Padding(
+            padding: EdgeInsets.only(top: 32, right: 32, left: 32),
+            child: DefaultTextStyle(
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+                child: Column(
+                  children: [
+                    TextField(
+                      onChanged: (text) => _name = text,
+                      decoration: InputDecoration(
+                          labelText: "Họ và tên",
+                          labelStyle: TextStyle(fontSize: 20),
+                          border: OutlineInputBorder(
+                            borderSide:
+                                BorderSide(color: Colors.blue, width: 1.0),
+                          )),
+                    ),
+                    datePicker,
+                    Container(
+                      width: 150,
+                      color: Colors.blue,
+                      margin: EdgeInsets.only(top: 24),
+                      child: RaisedButton(
+                        color: Colors.transparent,
+                        elevation: 0,
+                        onPressed: () {
+                          if (datePicker.getDate() == null ||
+                              datePicker.getDate().toString().isEmpty ||
+                              _name.isEmpty) {
+                            Fluttertoast.showToast(
+                                msg:
+                                    "Bạn cần cung cấp đủ thông tin để đăng ký. Vui long kiểm tra lại !",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.CENTER,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.blue,
+                                textColor: Colors.white,
+                                fontSize: 16.0);
+                            return;
+                          }
+                          print(
+                              "$_name : ${datePicker.getDate().toString()}");
+                          _createUser(
+                              context,
+                              UserModel(
+                                name: _name,
+                                date: datePicker.getDate(),
+                              ));
+                        },
+                        child: Text(
+                          "Đăng ký",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    )
+                  ],
+                )),
           ),
         ));
   }
 
   void _createDatabase() {
-    var db = AppDatabase().modesDao;
     _insertQuiz(db);
     _insertCategories(db);
   }
@@ -300,5 +363,71 @@ class Register extends StatelessWidget {
       CategoryModel(id: 5, name: "Sách", des: "Các câu hỏi về đề tài sách."),
       CategoryModel(id: 6, name: "Film", des: "Các câu hỏi về đề tài phim ảnh")
     ]);
+  }
+
+  void _createUser(BuildContext context, UserModel userModel) {
+    db.insertUser(userModel: userModel).then((value) {
+      if (value != null) {
+        print("success");
+        _createDatabase();
+        Navigator.pushNamed(context, '/home');
+      }
+    });
+  }
+}
+
+class DatePicker extends StatefulWidget {
+  final date = _DatePickSate();
+
+  DateTime getDate() => date.getDate();
+
+  @override
+  State<StatefulWidget> createState() => date;
+}
+
+class _DatePickSate extends State<DatePicker> {
+  DateTime selectedDate = DateTime.now();
+  TextEditingController controller = TextEditingController();
+
+  DateTime getDate() {
+    return selectedDate;
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(1970, 8),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+        controller.text = DateTimeFormat.getDate(selectedDate);
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.only(top: 16),
+      child: TextFormField(
+        controller: controller,
+        decoration: InputDecoration(
+            labelText: "Ngày sinh",
+            labelStyle: TextStyle(
+              fontSize: 20,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(Icons.calendar_today),
+              onPressed: () {
+                FocusScope.of(context).requestFocus(FocusNode());
+                _selectDate(context);
+              },
+            ),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blue, width: 1.0),
+            )),
+      ),
+    );
   }
 }
