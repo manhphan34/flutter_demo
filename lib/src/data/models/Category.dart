@@ -5,14 +5,16 @@ class CategoryModel {
   int id;
   String name;
   String des;
+  String icon;
 
-  CategoryModel({this.id, this.name, this.des});
+  CategoryModel({this.id, this.name, this.des, this.icon});
 
   CategoryCompanion convert() {
     return CategoryCompanion(
       name: Value(this.name),
       description: Value(this.des),
       id: Value(this.id),
+      icon: Value(this.icon),
     );
   }
 }

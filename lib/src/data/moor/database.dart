@@ -20,6 +20,8 @@ class Category extends Table {
 
   TextColumn get description => text()();
 
+  TextColumn get icon => text()();
+
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -81,6 +83,10 @@ class ModesDao extends DatabaseAccessor<AppDatabase> with _$ModesDaoMixin {
   Future<List<PointData>> get getPoints => select(point).get();
 
   Future<List<QuizData>> get getQuizzes => select(quiz).get();
+
+  Future<List<QuizData>> getQuizzesByCat(int id){
+      return(select(quiz)..where((tbl) => tbl.idCat.equals(id))).get();
+  }
 
   Future<List<CategoryData>> get getCategories => select(category).get();
 
