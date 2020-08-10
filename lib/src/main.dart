@@ -1,6 +1,7 @@
 import 'dart:async';
 
-import 'package:flutte_demo/src/screen/home/Home.dart';
+import 'package:flutte_demo/src/screen/category/category.dart';
+import 'package:flutte_demo/src/screen/quiz/quiz.dart';
 import 'package:flutte_demo/src/screen/register/register.dart';
 import 'package:flutte_demo/src/utils/Constants.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => Home(),
         '/register': (context) => Register(),
-        '/home': (context) => Home(),
+        '/home': (context) => Category(),
+        '/quizzes':(context) => Quizzes(),
       },
       title: 'Flutter Demo',
       theme: ThemeData(

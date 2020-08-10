@@ -96,8 +96,7 @@ class Register extends StatelessWidget {
                                 fontSize: 16.0);
                             return;
                           }
-                          print(
-                              "$_name : ${datePicker.getDate().toString()}");
+                          print("$_name : ${datePicker.getDate().toString()}");
                           _createUser(
                               context,
                               UserModel(
@@ -353,15 +352,35 @@ class Register extends StatelessWidget {
   void _insertCategories(ModesDao db) {
     db.insertCategories(cats: [
       CategoryModel(
-          id: 1, name: "Âm nhạc", des: "Các câu hỏi về đề tài âm nhạc."),
+          id: 1,
+          name: "Âm nhạc",
+          des: "Các câu hỏi về đề tài âm nhạc.",
+          icon: "assets/images/music.png"),
       CategoryModel(
-          id: 2, name: "Ẩm thực", des: "Các câu hỏi về đề tài ẩm thực."),
+          id: 2,
+          name: "Ẩm thực",
+          des: "Các câu hỏi về đề tài ẩm thực.",
+          icon: "assets/images/chef.png"),
       CategoryModel(
-          id: 3, name: "Thể thao", des: "Các câu hỏi về đề tài thể thao."),
+          id: 3,
+          name: "Thể thao",
+          des: "Các câu hỏi về đề tài thể thao.",
+          icon: "assets/images/fast.png"),
       CategoryModel(
-          id: 4, name: "Khoa học", des: "Các câu hỏi về đề tài khoa học."),
-      CategoryModel(id: 5, name: "Sách", des: "Các câu hỏi về đề tài sách."),
-      CategoryModel(id: 6, name: "Film", des: "Các câu hỏi về đề tài phim ảnh")
+          id: 4,
+          name: "Khoa học",
+          des: "Các câu hỏi về đề tài khoa học.",
+          icon: "assets/images/science.png"),
+      CategoryModel(
+          id: 5,
+          name: "Sách",
+          des: "Các câu hỏi về đề tài sách.",
+          icon: "assets/images/book.png"),
+      CategoryModel(
+          id: 6,
+          name: "Film",
+          des: "Các câu hỏi về đề tài phim ảnh",
+          icon: "assets/images/video.png")
     ]);
   }
 

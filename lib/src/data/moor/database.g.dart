@@ -988,8 +988,12 @@ class CategoryData extends DataClass implements Insertable<CategoryData> {
   final int id;
   final String name;
   final String description;
+  final String icon;
   CategoryData(
-      {@required this.id, @required this.name, @required this.description});
+      {@required this.id,
+      @required this.name,
+      @required this.description,
+      @required this.icon});
   factory CategoryData.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -1000,6 +1004,7 @@ class CategoryData extends DataClass implements Insertable<CategoryData> {
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       description: stringType
           .mapFromDatabaseResponse(data['${effectivePrefix}description']),
+      icon: stringType.mapFromDatabaseResponse(data['${effectivePrefix}icon']),
     );
   }
   @override
@@ -1014,6 +1019,9 @@ class CategoryData extends DataClass implements Insertable<CategoryData> {
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
     }
+    if (!nullToAbsent || icon != null) {
+      map['icon'] = Variable<String>(icon);
+    }
     return map;
   }
 
@@ -1024,6 +1032,7 @@ class CategoryData extends DataClass implements Insertable<CategoryData> {
       description: description == null && nullToAbsent
           ? const Value.absent()
           : Value(description),
+      icon: icon == null && nullToAbsent ? const Value.absent() : Value(icon),
     );
   }
 
@@ -1034,6 +1043,7 @@ class CategoryData extends DataClass implements Insertable<CategoryData> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
+      icon: serializer.fromJson<String>(json['icon']),
     );
   }
   @override
@@ -1043,70 +1053,85 @@ class CategoryData extends DataClass implements Insertable<CategoryData> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
+      'icon': serializer.toJson<String>(icon),
     };
   }
 
-  CategoryData copyWith({int id, String name, String description}) =>
+  CategoryData copyWith(
+          {int id, String name, String description, String icon}) =>
       CategoryData(
         id: id ?? this.id,
         name: name ?? this.name,
         description: description ?? this.description,
+        icon: icon ?? this.icon,
       );
   @override
   String toString() {
     return (StringBuffer('CategoryData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('description: $description')
+          ..write('description: $description, ')
+          ..write('icon: $icon')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, description.hashCode)));
+  int get hashCode => $mrjf($mrjc(id.hashCode,
+      $mrjc(name.hashCode, $mrjc(description.hashCode, icon.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is CategoryData &&
           other.id == this.id &&
           other.name == this.name &&
-          other.description == this.description);
+          other.description == this.description &&
+          other.icon == this.icon);
 }
 
 class CategoryCompanion extends UpdateCompanion<CategoryData> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> description;
+  final Value<String> icon;
   const CategoryCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.description = const Value.absent(),
+    this.icon = const Value.absent(),
   });
   CategoryCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
     @required String description,
+    @required String icon,
   })  : name = Value(name),
-        description = Value(description);
+        description = Value(description),
+        icon = Value(icon);
   static Insertable<CategoryData> custom({
     Expression<int> id,
     Expression<String> name,
     Expression<String> description,
+    Expression<String> icon,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (description != null) 'description': description,
+      if (icon != null) 'icon': icon,
     });
   }
 
   CategoryCompanion copyWith(
-      {Value<int> id, Value<String> name, Value<String> description}) {
+      {Value<int> id,
+      Value<String> name,
+      Value<String> description,
+      Value<String> icon}) {
     return CategoryCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       description: description ?? this.description,
+      icon: icon ?? this.icon,
     );
   }
 
@@ -1122,6 +1147,9 @@ class CategoryCompanion extends UpdateCompanion<CategoryData> {
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
+    if (icon.present) {
+      map['icon'] = Variable<String>(icon.value);
+    }
     return map;
   }
 
@@ -1130,7 +1158,8 @@ class CategoryCompanion extends UpdateCompanion<CategoryData> {
     return (StringBuffer('CategoryCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('description: $description')
+          ..write('description: $description, ')
+          ..write('icon: $icon')
           ..write(')'))
         .toString();
   }
@@ -1179,8 +1208,20 @@ class $CategoryTable extends Category
     );
   }
 
+  final VerificationMeta _iconMeta = const VerificationMeta('icon');
+  GeneratedTextColumn _icon;
   @override
-  List<GeneratedColumn> get $columns => [id, name, description];
+  GeneratedTextColumn get icon => _icon ??= _constructIcon();
+  GeneratedTextColumn _constructIcon() {
+    return GeneratedTextColumn(
+      'icon',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, description, icon];
   @override
   $CategoryTable get asDslTable => this;
   @override
@@ -1208,6 +1249,12 @@ class $CategoryTable extends Category
               data['description'], _descriptionMeta));
     } else if (isInserting) {
       context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('icon')) {
+      context.handle(
+          _iconMeta, icon.isAcceptableOrUnknown(data['icon'], _iconMeta));
+    } else if (isInserting) {
+      context.missing(_iconMeta);
     }
     return context;
   }
