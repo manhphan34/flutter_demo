@@ -11,7 +11,12 @@ class UserData extends DataClass implements Insertable<UserData> {
   final int id;
   final String name;
   final DateTime date;
-  UserData({@required this.id, @required this.name, this.date});
+  final String image;
+  UserData(
+      {@required this.id,
+      @required this.name,
+      this.date,
+      @required this.image});
   factory UserData.fromData(Map<String, dynamic> data, GeneratedDatabase db,
       {String prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -23,6 +28,8 @@ class UserData extends DataClass implements Insertable<UserData> {
       name: stringType.mapFromDatabaseResponse(data['${effectivePrefix}name']),
       date:
           dateTimeType.mapFromDatabaseResponse(data['${effectivePrefix}date']),
+      image:
+          stringType.mapFromDatabaseResponse(data['${effectivePrefix}image']),
     );
   }
   @override
@@ -37,6 +44,9 @@ class UserData extends DataClass implements Insertable<UserData> {
     if (!nullToAbsent || date != null) {
       map['date'] = Variable<DateTime>(date);
     }
+    if (!nullToAbsent || image != null) {
+      map['image'] = Variable<String>(image);
+    }
     return map;
   }
 
@@ -45,6 +55,8 @@ class UserData extends DataClass implements Insertable<UserData> {
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       name: name == null && nullToAbsent ? const Value.absent() : Value(name),
       date: date == null && nullToAbsent ? const Value.absent() : Value(date),
+      image:
+          image == null && nullToAbsent ? const Value.absent() : Value(image),
     );
   }
 
@@ -55,6 +67,7 @@ class UserData extends DataClass implements Insertable<UserData> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       date: serializer.fromJson<DateTime>(json['date']),
+      image: serializer.fromJson<String>(json['image']),
     );
   }
   @override
@@ -64,68 +77,83 @@ class UserData extends DataClass implements Insertable<UserData> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'date': serializer.toJson<DateTime>(date),
+      'image': serializer.toJson<String>(image),
     };
   }
 
-  UserData copyWith({int id, String name, DateTime date}) => UserData(
+  UserData copyWith({int id, String name, DateTime date, String image}) =>
+      UserData(
         id: id ?? this.id,
         name: name ?? this.name,
         date: date ?? this.date,
+        image: image ?? this.image,
       );
   @override
   String toString() {
     return (StringBuffer('UserData(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('date: $date')
+          ..write('date: $date, ')
+          ..write('image: $image')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      $mrjf($mrjc(id.hashCode, $mrjc(name.hashCode, date.hashCode)));
+  int get hashCode => $mrjf($mrjc(
+      id.hashCode, $mrjc(name.hashCode, $mrjc(date.hashCode, image.hashCode))));
   @override
   bool operator ==(dynamic other) =>
       identical(this, other) ||
       (other is UserData &&
           other.id == this.id &&
           other.name == this.name &&
-          other.date == this.date);
+          other.date == this.date &&
+          other.image == this.image);
 }
 
 class UserCompanion extends UpdateCompanion<UserData> {
   final Value<int> id;
   final Value<String> name;
   final Value<DateTime> date;
+  final Value<String> image;
   const UserCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.date = const Value.absent(),
+    this.image = const Value.absent(),
   });
   UserCompanion.insert({
     this.id = const Value.absent(),
     @required String name,
     this.date = const Value.absent(),
-  }) : name = Value(name);
+    @required String image,
+  })  : name = Value(name),
+        image = Value(image);
   static Insertable<UserData> custom({
     Expression<int> id,
     Expression<String> name,
     Expression<DateTime> date,
+    Expression<String> image,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (date != null) 'date': date,
+      if (image != null) 'image': image,
     });
   }
 
   UserCompanion copyWith(
-      {Value<int> id, Value<String> name, Value<DateTime> date}) {
+      {Value<int> id,
+      Value<String> name,
+      Value<DateTime> date,
+      Value<String> image}) {
     return UserCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       date: date ?? this.date,
+      image: image ?? this.image,
     );
   }
 
@@ -141,6 +169,9 @@ class UserCompanion extends UpdateCompanion<UserData> {
     if (date.present) {
       map['date'] = Variable<DateTime>(date.value);
     }
+    if (image.present) {
+      map['image'] = Variable<String>(image.value);
+    }
     return map;
   }
 
@@ -149,7 +180,8 @@ class UserCompanion extends UpdateCompanion<UserData> {
     return (StringBuffer('UserCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('date: $date')
+          ..write('date: $date, ')
+          ..write('image: $image')
           ..write(')'))
         .toString();
   }
@@ -192,8 +224,20 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
     );
   }
 
+  final VerificationMeta _imageMeta = const VerificationMeta('image');
+  GeneratedTextColumn _image;
   @override
-  List<GeneratedColumn> get $columns => [id, name, date];
+  GeneratedTextColumn get image => _image ??= _constructImage();
+  GeneratedTextColumn _constructImage() {
+    return GeneratedTextColumn(
+      'image',
+      $tableName,
+      false,
+    );
+  }
+
+  @override
+  List<GeneratedColumn> get $columns => [id, name, date, image];
   @override
   $UserTable get asDslTable => this;
   @override
@@ -217,6 +261,12 @@ class $UserTable extends User with TableInfo<$UserTable, UserData> {
     if (data.containsKey('date')) {
       context.handle(
           _dateMeta, date.isAcceptableOrUnknown(data['date'], _dateMeta));
+    }
+    if (data.containsKey('image')) {
+      context.handle(
+          _imageMeta, image.isAcceptableOrUnknown(data['image'], _imageMeta));
+    } else if (isInserting) {
+      context.missing(_imageMeta);
     }
     return context;
   }

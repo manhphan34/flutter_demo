@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:flutte_demo/src/data/models/Point.dart';
 import 'package:flutte_demo/src/data/models/Result.dart';
 import 'package:flutte_demo/src/data/moor/database.dart';
 import 'package:flutte_demo/src/screen/category/category.dart';
@@ -47,11 +50,16 @@ class _QuizzesState extends State<Quizzes> {
           ),
           Container(
             alignment: Alignment.topLeft,
-            margin: EdgeInsets.only(top: 36, left: 16),
-            child: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-              size: 24,
+            margin: EdgeInsets.only(top: 24),
+            child: IconButton(
+              onPressed: () {
+                Navigator.popUntil(context, ModalRoute.withName('/user'));
+              },
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           ),
           Container(
@@ -67,6 +75,7 @@ class _QuizzesState extends State<Quizzes> {
                       quizzes = snapshot.data;
                       return Quiz(
                         quizzes: snapshot.data,
+                        catId: categoryData.id,
                       );
                     } else
                       return Text("Data error");
@@ -85,15 +94,18 @@ class _QuizzesState extends State<Quizzes> {
 class Quiz extends StatefulWidget {
   List<QuizData> quizzes;
 
-  Quiz({this.quizzes});
+  int catId;
+
+  Quiz({this.quizzes, this.catId});
 
   @override
   State<StatefulWidget> createState() {
-    return _QuizState(quizzes);
+    return _QuizState(quizzes, catId);
   }
 }
 
 class _QuizState extends State<Quiz> {
+  var db = AppDatabase.getInstance().modesDao;
   List<QuizData> quizzes;
   QuizData quiz;
   var _result = [0, 0, 0, 0];
@@ -102,9 +114,13 @@ class _QuizState extends State<Quiz> {
   int _currentQuiz = 0;
   var _nextState = 0;
   var _quizController = TextEditingController();
+  int _catId;
+  List<PointData> _points;
 
-  _QuizState(List<QuizData> quizzes) {
+  _QuizState(List<QuizData> quizzes, int catId) {
     this.quizzes = quizzes;
+    this._catId = catId;
+    print(catId);
   }
 
   @override
@@ -116,13 +132,15 @@ class _QuizState extends State<Quiz> {
     if (quizzes != null && quizzes.isNotEmpty) {
       quiz = quizzes[_currentQuiz];
     }
+    _points = List<PointData>();
+    getPoints();
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Stack(
+        Row(
           children: [
             Container(
               margin: EdgeInsets.only(bottom: 16),
@@ -138,20 +156,24 @@ class _QuizState extends State<Quiz> {
                 shape: BoxShape.circle,
               ),
             ),
+            Expanded(child:
             Container(
               padding: EdgeInsets.only(top: 6),
-              margin: EdgeInsets.only(left: 48),
-              alignment: Alignment.centerLeft,
-              child: Container(
+              margin: EdgeInsets.only(left: 16),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: 42
+                ),
                 child: Text(
                   quiz.description,
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
               ),
-            )
+            ),)
           ],
         ),
         Card(
+          margin: EdgeInsets.only(top: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -237,14 +259,27 @@ class _QuizState extends State<Quiz> {
     );
   }
 
-  void _nextQuiz() {
+  void _nextQuiz() async {
+    _character = "";
     if (_currentQuiz == 3) {
+      var point = 0;
       List<Result> results = List<Result>();
       for (int i = 0; i < _result.length; i++) {
+        if (_result[i] == quizzes[i].result) point++;
         results.add(Result(
             quizData: quizzes[i],
             correctAns: quizzes[i].result,
             answer: _result[i]));
+      }
+
+      if (checkCatId()) {
+        await db.updatePoint(_catId, point);
+      } else {
+        await db
+            .insertPoint(
+                PointModel(date: DateTime.now(), idCat: _catId, point: point)
+                    .convert())
+            .then((value) => print(point));
       }
       Navigator.push(
           context,
@@ -261,5 +296,20 @@ class _QuizState extends State<Quiz> {
       _quizController.text = (_currentQuiz + 1).toString();
       quiz = quizzes[_currentQuiz];
     });
+  }
+
+  void getPoints() async {
+    await db.getPoints.then((value) {
+      if (value != null) _points = value;
+    });
+  }
+
+  bool checkCatId() {
+    for (int i = 0; i < _points.length; i++) {
+      if (_points[i].idCat == _catId) {
+        return true;
+      }
+    }
+    return false;
   }
 }

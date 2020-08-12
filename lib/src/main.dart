@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutte_demo/src/screen/category/category.dart';
 import 'package:flutte_demo/src/screen/quiz/quiz.dart';
 import 'package:flutte_demo/src/screen/register/register.dart';
+import 'package:flutte_demo/src/screen/user/user.dart';
 import 'package:flutte_demo/src/utils/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,12 +19,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => Home(),
+        '/': (context) => Splash(),
         '/register': (context) => Register(),
-        '/home': (context) => Category(),
-        '/quizzes':(context) => Quizzes(),
+        '/category': (context) => Home(),
+        '/quizzes': (context) => Quizzes(),
+        '/user': (context) => User(),
       },
-      title: 'Flutter Demo',
+      title: 'Quiz App',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -61,14 +63,17 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
     _animation = Tween(begin: 0.0, end: 1.0).animate(_controller);
     _isRegister().then((value) {
-      if (!value)
-        Timer(
-          Duration(seconds: 3),
-          () {
-            print(value);
+      Timer(
+        Duration(seconds: 3),
+            () {
+          print(value);
+          if (!value) {
             Navigator.pushNamed(context, "/register");
-          },
-        );
+          } else {
+            Navigator.pushNamed(context, "/user");
+          }
+        },
+      );
     });
   }
 

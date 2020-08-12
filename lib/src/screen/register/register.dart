@@ -2,11 +2,13 @@ import 'package:flutte_demo/src/data/models/Category.dart';
 import 'package:flutte_demo/src/data/models/Quiz.dart';
 import 'package:flutte_demo/src/data/models/User.dart';
 import 'package:flutte_demo/src/data/moor/database.dart';
+import 'package:flutte_demo/src/utils/Constants.dart';
 import 'package:flutte_demo/src/utils/Date.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Register extends StatelessWidget {
   var _name = "";
@@ -19,7 +21,7 @@ class Register extends StatelessWidget {
             context: context,
             builder: (context) => new AlertDialog(
               title: new Text('Are you sure?'),
-              content: new Text('Do you want to exit an App'),
+              content: new Text('Do you want to exit app'),
               actions: [
                 Row(
                   children: [
@@ -87,7 +89,7 @@ class Register extends StatelessWidget {
                               _name.isEmpty) {
                             Fluttertoast.showToast(
                                 msg:
-                                    "Bạn cần cung cấp đủ thông tin để đăng ký. Vui long kiểm tra lại !",
+                                    "Bạn cần cung cấp đủ thông tin để đăng ký. Vui lòng kiểm tra lại !",
                                 toastLength: Toast.LENGTH_SHORT,
                                 gravity: ToastGravity.CENTER,
                                 timeInSecForIosWeb: 1,
@@ -100,9 +102,9 @@ class Register extends StatelessWidget {
                           _createUser(
                               context,
                               UserModel(
-                                name: _name,
-                                date: datePicker.getDate(),
-                              ));
+                                  name: _name,
+                                  date: datePicker.getDate(),
+                                  image: ""));
                         },
                         child: Text(
                           "Đăng ký",
@@ -387,11 +389,16 @@ class Register extends StatelessWidget {
   void _createUser(BuildContext context, UserModel userModel) {
     db.insertUser(userModel: userModel).then((value) {
       if (value != null) {
-        print("success");
+        _updateLogged();
         _createDatabase();
-        Navigator.pushNamed(context, '/home');
+        Navigator.pushNamed(context, '/user');
       }
     });
+  }
+
+  void _updateLogged() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setBool(IS_REGISTER, true);
   }
 }
 
