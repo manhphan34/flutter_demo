@@ -19,13 +19,18 @@ class Home extends StatelessWidget {
               style: TextStyle(color: Colors.white, fontSize: 20),
             ),
           ),
-          Container(
-            alignment: Alignment.topLeft,
-            margin: EdgeInsets.only(top: 36, left: 16),
-            child: Icon(
-              Icons.arrow_back,
-              color: Colors.white,
-              size: 24,
+          InkWell(
+            onTap: (){
+              Navigator.pop(context);
+            },
+            child: Container(
+              alignment: Alignment.topLeft,
+              margin: EdgeInsets.only(top: 36, left: 16),
+              child: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
           ),
           Container(

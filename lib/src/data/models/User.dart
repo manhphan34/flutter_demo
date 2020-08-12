@@ -5,13 +5,15 @@ class UserModel {
   int id;
   String name;
   DateTime date;
+  String image = "";
 
-  UserModel({this.name, this.date});
+  UserModel({this.name, this.date, this.image});
 
   UserCompanion convert() {
     return UserCompanion(
       name: Value(this.name),
       date: Value(this.date),
+      image: Value(image),
     );
   }
 }

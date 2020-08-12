@@ -11,7 +11,7 @@ class PointModel {
 
   PointCompanion convert() {
     return PointCompanion(
-      idCat: Value(this.id),
+      idCat: Value(this.idCat),
       point: Value(this.point),
       date: Value(this.date),
     );

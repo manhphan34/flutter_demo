@@ -11,6 +11,8 @@ class User extends Table {
   TextColumn get name => text().named('name')();
 
   DateTimeColumn get date => dateTime().nullable()();
+
+  TextColumn get image => text()();
 }
 
 class Category extends Table {
@@ -84,8 +86,8 @@ class ModesDao extends DatabaseAccessor<AppDatabase> with _$ModesDaoMixin {
 
   Future<List<QuizData>> get getQuizzes => select(quiz).get();
 
-  Future<List<QuizData>> getQuizzesByCat(int id){
-      return(select(quiz)..where((tbl) => tbl.idCat.equals(id))).get();
+  Future<List<QuizData>> getQuizzesByCat(int id) {
+    return (select(quiz)..where((tbl) => tbl.idCat.equals(id))).get();
   }
 
   Future<List<CategoryData>> get getCategories => select(category).get();
@@ -107,7 +109,15 @@ class ModesDao extends DatabaseAccessor<AppDatabase> with _$ModesDaoMixin {
     return into(point).insert(pointCompanion);
   }
 
-  Future updatePoint(PointData entry) {
-    return update(point).replace(entry);
+  Future updateUser(int id, String path) {
+    return (update(user)..where((t) => t.id.equals(id))).write(
+      UserCompanion(image: Value(path)),
+    );
+  }
+
+  Future updatePoint(int catId, int p) {
+    return (update(point)..where((t) => t.idCat.equals(catId))).write(
+      PointCompanion(point: Value(p), date: Value(DateTime.now())),
+    );
   }
 }

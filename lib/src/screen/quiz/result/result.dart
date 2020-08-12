@@ -14,61 +14,67 @@ class ResultPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     getCorrectAns();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Kết quả"),
-        backgroundColor: Colors.deepPurpleAccent,
-        centerTitle: true,
-        elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.deepPurpleAccent, Colors.pink],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pushNamed(context, "/user");
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Kết quả"),
+          backgroundColor: Colors.deepPurpleAccent,
+          centerTitle: true,
+          elevation: 0,
         ),
-        child: Column(
-          children: [
-            ContainerInfo(
-              title: "Tổng số lượng câu hỏi",
-              subTitle: "4",
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurpleAccent, Colors.pink],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-            ContainerInfo(
-              title: "Điểm",
-              subTitle: _correctAns.toString(),
-            ),
-            ContainerInfo(
-              title: "Số câu trả lời đúng ",
-              subTitle: "$_correctAns/4",
-            ),
-            ContainerInfo(
-              title: "Số câu trả lời sai",
-              subTitle: "${4 - _correctAns}/4",
-            ),
-            Container(
-              height: 50,
-              margin: EdgeInsets.only(top: 32),
-              child: RaisedButton(
-                color: Colors.deepPurpleAccent,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CheckResult(
-                        results: results,
-                      ),
-                    ),
-                  );
-                },
-                child: Text(
-                  "Kiểm tra kết quả",
-                  style: TextStyle(color: Colors.white, fontSize: 18),
-                ),
+          ),
+          child: Column(
+            children: [
+              ContainerInfo(
+                title: "Tổng số lượng câu hỏi",
+                subTitle: "4",
               ),
-            )
-          ],
+              ContainerInfo(
+                title: "Điểm",
+                subTitle: _correctAns.toString(),
+              ),
+              ContainerInfo(
+                title: "Số câu trả lời đúng ",
+                subTitle: "$_correctAns/4",
+              ),
+              ContainerInfo(
+                title: "Số câu trả lời sai",
+                subTitle: "${4 - _correctAns}/4",
+              ),
+              Container(
+                height: 50,
+                margin: EdgeInsets.only(top: 32),
+                child: RaisedButton(
+                  color: Colors.deepPurpleAccent,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CheckResult(
+                          results: results,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    "Kiểm tra kết quả",
+                    style: TextStyle(color: Colors.white, fontSize: 18),
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
